@@ -1,0 +1,83 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway-service
+  
+  cloud:
+    nacos:
+      discovery:
+        server-addr: nacos:8848
+        namespace: public
+        group: DEFAULT_GROUP
+      config:
+        server-addr: nacos:8848
+        namespace: public
+        group: DEFAULT_GROUP
+        file-extension: yml
+
+#    sentinel:
+#      enabled: false
+
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        # 用户服务路由 (使用 RewritePath 重写)
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/user/**  # 前端请求路径
+          filters:
+            - RewritePath=/api/user/(?<segment>.*), /api/v1/user/$\{segment} # 路径重写
+            - AuthFilter
+
+        # 商家服务路由 (使用 RewritePath 重写)
+        - id: store-service
+          uri: lb://store-service
+          predicates:
+            - Path=/api/store/** # 前端请求路径
+          filters:
+            - RewritePath=/api/store/(?<segment>.*), /api/v1/store/$\{segment} # 路径重写
+            - AuthFilter
+
+        # 订单服务路由 (使用 RewritePath 重写)
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/order/** # 前端请求路径
+          filters:
+            - RewritePath=/api/order/(?<segment>.*), /api/v1/order/$\{segment} # 路径重写
+            - AuthFilter
+
+        # 支付服务路由 (路径无需重写)
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/payment/**
+          filters:
+            - AuthFilter
+      
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origin-patterns: "*"
+            allowed-methods: "*"
+            allowed-headers: "*"
+            allow-credentials: true
+
+# JWT配置
+jwt:
+  secret: a-very-long-and-secure-secret-key-for-your-elm-cloud-project-2024
+  expiration: 86400000 # 24小时
+
+# 日志配置
+logging:
+  level:
+    ynu.edu.gatewayservice: debug
+    org.springframework.cloud.gateway: debug
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n'
