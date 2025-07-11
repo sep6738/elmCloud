@@ -1,0 +1,56 @@
+server:
+  port: 8081
+  
+spring:
+  application:
+    name: user-service
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysql:3306/elm_user?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+  cloud:
+    nacos:
+      discovery:
+        server-addr: nacos:8848
+        namespace: public
+        group: DEFAULT_GROUP
+#      config:
+#        server-addr: localhost:8848
+#        namespace: public
+#        group: DEFAULT_GROUP
+#        file-extension: yml
+    sentinel:
+      transport:
+        dashboard: sentinel:8858
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+
+management:
+  # 如果你使用了Actuator，也需要禁用它的安全性
+  security:
+    enabled: false
+
+mybatis:
+  # mapper-locations: classpath:/mapper/*.xml
+  type-aliases-package: ynu.edu.userservice.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# JWT配置
+jwt:
+  secret: a-very-long-and-secure-secret-key-for-your-elm-cloud-project-2024
+  expiration: 86400000  # 24小时
+  refresh-expiration: 604800000  # 7天
+
+# 短信配置(模拟)
+sms:
+  template:
+    register: "您的注册验证码是：{code}，请在5分钟内完成验证。"
+    reset-password: "您的密码重置验证码是：{code}，请在5分钟内完成验证。"
+    login: "您的登录验证码是：{code}，请在5分钟内完成验证。"
+
+logging:
+  level:
+    ynu.edu: debug

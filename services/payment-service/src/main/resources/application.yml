@@ -1,0 +1,69 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: payment-service
+  
+  datasource:
+    url: jdbc:mysql://mysql:3306/elm_cloud_payment?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  
+  cloud:
+    nacos:
+      discovery:
+        server-addr: nacos:8848
+        namespace: public
+        group: DEFAULT_GROUP
+      config:
+        server-addr: nacos:8848
+        namespace: public
+        group: DEFAULT_GROUP
+        file-extension: yml
+    sentinel:
+      transport:
+        dashboard: sentinel:8858
+        port: 8719
+      datasource:
+        ds1:
+          file:
+            file: classpath:flowrule.json
+            rule-type: flow
+
+# MyBatis配置
+mybatis:
+  mapper-locations: classpath*:/mapper/*.xml
+  type-aliases-package: ynu.edu.paymentservice.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    call-setters-on-nulls: true
+    jdbc-type-for-null: 'null'
+
+# 日志配置
+logging:
+  level:
+    ynu.edu.paymentservice: debug
+    org.mybatis: debug
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n'
+
+# 支付配置
+payment:
+  simulation:
+    success-rate: 90  # 模拟支付成功率（百分比）
+    delay-ms: 2000   # 模拟支付延迟（毫秒）
+  refund:
+    success-rate: 95  # 模拟退款成功率（百分比）
+    delay-ms: 1000   # 模拟退款延迟（毫秒）
+
+# Feign配置
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: basic

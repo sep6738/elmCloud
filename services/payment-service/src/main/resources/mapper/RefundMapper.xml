@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ynu.edu.paymentservice.mapper.RefundMapper">
+
+    <resultMap id="RefundVOResultMap" type="ynu.edu.paymentservice.vo.RefundVO">
+        <id column="id" property="id"/>
+        <result column="refund_no" property="refundNo"/>
+        <result column="payment_no" property="paymentNo"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="user_id" property="userId"/>
+        <result column="amount" property="amount"/>
+        <result column="reason" property="reason"/>
+        <result column="status" property="status"/>
+        <result column="third_party_refund_no" property="thirdPartyRefundNo"/>
+        <result column="refunded_at" property="refundedAt"/>
+        <result column="remark" property="remark"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <select id="selectRefundPage" resultMap="RefundVOResultMap">
+        SELECT 
+            id, refund_no, payment_no, order_no, user_id, amount, reason,
+            status, third_party_refund_no, refunded_at, remark, created_at, updated_at
+        FROM refund
+        WHERE deleted = 0
+        <if test="paymentNo != null and paymentNo != ''">
+            AND payment_no = #{paymentNo}
+        </if>
+        <if test="userId != null">
+            AND user_id = #{userId}
+        </if>
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="selectByRefundNo" resultMap="RefundVOResultMap">
+        SELECT 
+            id, refund_no, payment_no, order_no, user_id, amount, reason,
+            status, third_party_refund_no, refunded_at, remark, created_at, updated_at
+        FROM refund
+        WHERE refund_no = #{refundNo} AND deleted = 0
+    </select>
+
+    <select id="selectByPaymentNo" resultMap="RefundVOResultMap">
+        SELECT 
+            id, refund_no, payment_no, order_no, user_id, amount, reason,
+            status, third_party_refund_no, refunded_at, remark, created_at, updated_at
+        FROM refund
+        WHERE payment_no = #{paymentNo} AND deleted = 0
+        ORDER BY created_at DESC
+        LIMIT 1
+    </select>
+
+</mapper>

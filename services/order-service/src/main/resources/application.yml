@@ -1,0 +1,78 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: order-service
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysql:3306/elm_cloud_order?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+  
+  # Nacos配置
+  cloud:
+    nacos:
+      discovery:
+        server-addr: nacos:8848
+        namespace: public
+        group: DEFAULT_GROUP
+      config:
+        server-addr: nacos:8848
+        namespace: public
+        group: DEFAULT_GROUP
+        file-extension: yml
+    
+    # Sentinel配置
+    sentinel:
+      transport:
+        dashboard: sentinel:8858
+        port: 8719
+      datasource:
+        ds1:
+          nacos:
+            server-addr: nacos:8848
+            dataId: order-service-sentinel
+            groupId: elm-cloud
+            data-type: json
+            rule-type: flow
+
+# MyBatis配置
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  # 只在有XML文件时才配置mapper-locations
+  # mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: ynu.edu.orderservice.entity
+
+# Feign配置
+feign:
+  sentinel:
+    enabled: true
+  httpclient:
+    enabled: true
+    max-connections: 200
+    max-connections-per-route: 50
+
+# 日志配置
+logging:
+  level:
+    ynu.edu.orderservice: debug
+    org.springframework.cloud.openfeign: debug
+
+# 业务配置
+business:
+  # 订单相关配置
+  order:
+    # 订单超时时间（分钟）
+    timeout: 30
+    # 包装费（元）
+    package-fee: 2.0
+    # 配送费计算基数（元/公里）
+    delivery-fee-base: 3.0
+  
+  # 购物车配置
+  cart:
+    # 购物车商品最大数量
+    max-items: 50
